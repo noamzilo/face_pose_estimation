@@ -10,10 +10,19 @@ class VideoReader(object):
     def _create_capture_object(self):
         self._cap = cv2.VideoCapture(self._path_to_video)
 
-    def frames(self):
+    def frames(self, start, end, skip=None):
+        if skip is not None:
+            raise NotImplementedError
+
+        current_frame_ind = 0
         cap = self._cap
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
+            if current_frame_ind < start:
+                continue
+            elif end <= current_frame_ind:
+                break
             yield frame
+            current_frame_ind += 1
