@@ -23,7 +23,7 @@ def video_reader(video_path):
 
 
 def test_video_reader(video_reader):
-    for frame in video_reader.frames():
+    for frame in video_reader.frames(start=10, end=100, skip=5):
         cv2.imshow(f'Frame', frame)
 
         # Press Q on keyboard to  exit
