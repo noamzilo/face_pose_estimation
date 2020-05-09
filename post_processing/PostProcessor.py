@@ -27,8 +27,8 @@ class PostProcessor(object):
         for bbox in np.array(bboxes, dtype=np.int):
             left = bbox[0]
             top = bbox[1]
-            right = left + bbox[2]
-            bottom = top + bbox[3]
+            right = bbox[2]
+            bottom = bbox[3]
 
             frame_cv2[top:bottom, left:right] = \
                 cv2.GaussianBlur(src=frame_cv2[top:bottom, left:right], ksize=(51, 51), sigmaX=0, sigmaY=0)
