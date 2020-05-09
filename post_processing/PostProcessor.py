@@ -5,19 +5,30 @@ import numpy as np
 
 
 class PostProcessor(object):
-
     bbox_color = (255, 0, 0)
     bbox_width = 6
 
     @staticmethod
-    def draw_rectengles(frame_pil, bboxes):
+    def draw_rectengles(frame_cv2, bboxes):
         if bboxes is None:
-            return frame_pil
+            return frame_cv2
 
-        draw = ImageDraw.Draw(frame_pil)
         for bbox in bboxes:
-            draw.rectangle(bbox.tolist(), outline=PostProcessor.bbox_color, width=PostProcessor.bbox_width)
-        return frame_pil
+            left = bbox[0]
+            top = bbox[1]
+            right = bbox[2]
+            bottom = bbox[3]
+            frame_cv2 = cv2.rectangle(
+                frame_cv2,
+                (left, top),
+                (right, bottom),
+                PostProcessor.bbox_color,
+                PostProcessor.bbox_width)
+
+        # draw = ImageDraw.Draw(frame_pil)
+        # for bbox in bboxes:
+        #     draw.rectangle(bbox.tolist(), outline=PostProcessor.bbox_color, width=PostProcessor.bbox_width)
+        return frame_cv2
 
     @staticmethod
     def blur_at_bboxes(frame_cv2, bboxes):

@@ -18,7 +18,7 @@ def example_pipeline():
     path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL', downsample_factor=0.25)
-    frames = video_reader.frames(start=50, end=120,)
+    frames = video_reader.frames(start=60, end=120,)
 
     # run video through MTCNN
     frames_tracked = []
@@ -29,14 +29,15 @@ def example_pipeline():
         # Detect faces
         bboxes, confidences = mtcnn.detect(frame)
         confidence_threshold = 0.95
-        filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
 
-        frame = PostProcessor.draw_rectengles(frame, filtered_bboxes)
-        frame_cv2 = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        frame = PostProcessor.blur_at_bboxes(frame_cv2, filtered_bboxes)
+        frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
+
+        if bboxes is not None:
+            filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
+            frame = PostProcessor.draw_rectengles(frame, filtered_bboxes)
+            frame = PostProcessor.blur_at_bboxes(frame, filtered_bboxes)
 
         # display detections
-        # cv2_frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
         cv2.imshow(f'Frame', frame)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
