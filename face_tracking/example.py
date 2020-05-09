@@ -16,7 +16,7 @@ def example_facenet():
     path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL')
-    frames = video_reader.frames(start=0, end=25)
+    frames = video_reader.frames(start=0, end=5)
     # frames = [Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)) for frame in video]
 
 
@@ -49,11 +49,10 @@ def example_facenet():
 
     print(f'\nDone')
 
-
     # save tracked video
     out_path = r'C:\noam\face_pose_estimation\output\video_tracked.mp4'
     video_writer_fourrcc = cv2.VideoWriter_fourcc(*'FMP4')
-    video_tracked = cv2.VideoWriter(out_path, video_writer_fourrcc, video_reader.frame_rate, video_reader.shape)
+    video_tracked = cv2.VideoWriter(out_path, video_writer_fourrcc, video_reader.frame_rate , video_reader.shape[:2])
     for frame in frames_tracked:
         video_tracked.write(frame)
     video_tracked.release()

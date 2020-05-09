@@ -24,7 +24,7 @@ class VideoReader(object):
         if resize_to_shape is not None:
             self._output_frame_shape = (resize_to_shape[0], resize_to_shape[1], self._n_channels)
         else:
-            frame_shape = tuple(np.array([self._width, self._height]) * downsample_factor)
+            frame_shape = tuple((np.array([self._width, self._height]) * downsample_factor).astype(np.int))
             self._output_frame_shape = (frame_shape[0], frame_shape[1], self._n_channels)
 
     def _set_mode(self, mode):
@@ -52,7 +52,7 @@ class VideoReader(object):
     def _resize_to_shape(self, frame):
         if self._output_frame_shape is None:
             return frame
-        frame = cv2.resize(frame, self._output_frame_shape)
+        frame = cv2.resize(frame, self._output_frame_shape[:2])
         return frame
 
     def _apply_filters(self, frame):
