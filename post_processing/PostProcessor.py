@@ -10,12 +10,12 @@ class PostProcessor(object):
     @staticmethod
     def draw_rectengles(frame, bboxes, confidences):
         if bboxes is None:
-            raise ValueError("no bboxes to draw")
+            return frame
         assert len(bboxes) == len(confidences)
 
         draw = ImageDraw.Draw(frame)
         if bboxes is None:
-            raise ValueError("no bboxes to draw")
+            return frame
         for box, confidence in zip(bboxes, confidences):
             if PostProcessor.confidence_threshold < confidence:
                 draw.rectangle(box.tolist(), outline=PostProcessor.bbox_color, width=PostProcessor.bbox_width)

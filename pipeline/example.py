@@ -18,7 +18,7 @@ def example_pipeline():
     path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL', downsample_factor=0.25)
-    frames = video_reader.frames(start=0, end=100,)
+    frames = video_reader.frames(start=50, end=120,)
 
     # run video through MTCNN
     frames_tracked = []
@@ -29,11 +29,7 @@ def example_pipeline():
         # Detect faces
         boxes, confidences = mtcnn.detect(frame)
 
-        try:
-            frame = PostProcessor.draw_rectengles(frame, boxes, confidences)
-        except ValueError as e:
-            continue
-
+        frame = PostProcessor.draw_rectengles(frame, boxes, confidences)
 
         # display detections
         cv2_frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
@@ -47,7 +43,7 @@ def example_pipeline():
     print(f'\nDone')
 
     # save tracked video
-    out_path = r'/output/video_tracked.mp4'
+    out_path = r'C:\noam\face_pose_estimation\output\output.mp4'
     video_writer_fourrcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_tracked = cv2.VideoWriter(out_path, video_writer_fourrcc, video_reader.frame_rate, video_reader.shape[:2])
     for frame in frames_tracked:
