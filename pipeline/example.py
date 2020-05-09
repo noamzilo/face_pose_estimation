@@ -15,6 +15,7 @@ def example_pipeline():
     print(f'Running on device: {device}')
     start_frame, end_frame = 60, 120
     # start_frame, end_frame = 5, 10
+    # start_frame, end_frame = 0, 200
 
 
     mtcnn = MTCNN(keep_all=True, device=device)
@@ -25,9 +26,10 @@ def example_pipeline():
     frames = video_reader.frames(start=start_frame, end=end_frame,)
 
     frames_tracked = []
-    bboxes_per_frame = []
+    # bboxes_per_frame = []
     # modify bboxes by temporal data
     confidence_threshold = 0.95
+    last_frame_filtered_bboxes, last_frame_confidences = None, None
     for i, frame in enumerate(frames):
         print(f'\rTracking frame: {i + 1}', end='')
 
@@ -35,16 +37,13 @@ def example_pipeline():
 
         if bboxes is not None:
             filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
-            if len(filtered_bboxes) > 0:
-                bboxes_per_frame.append(filtered_bboxes)
-            else:
-                bboxes_per_frame.append(bboxes_per_frame[-1])
+            if len(filtered_bboxes) == 0:
+                filtered_bboxes = last_frame_filtered_bboxes
         else:  # most naiive, just copy from last frame
-            bboxes_per_frame.append(bboxes_per_frame[-1])
+            filtered_bboxes = last_frame_filtered_bboxes
 
-    # post process by found bboxes
-    frames = video_reader.frames(start=start_frame, end=end_frame)  # have to create a new generator for second pass
-    for i, (frame, bboxes) in enumerate(zip(frames, bboxes_per_frame)):
+        last_frame_filtered_bboxes, last_frame_confidences = filtered_bboxes, confidences
+
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
         frame = post_process_frame(frame, bboxes)
 
@@ -52,6 +51,17 @@ def example_pipeline():
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
         frames_tracked.append(frame)
+
+    # post process by found bboxes
+    # frames = video_reader.frames(start=start_frame, end=end_frame)  # have to create a new generator for second pass
+    # for i, (frame, bboxes) in enumerate(zip(frames, bboxes_per_frame)):
+    #     frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
+    #     frame = post_process_frame(frame, bboxes)
+    #
+    #     cv2.imshow(f'Frame', frame)
+    #     if cv2.waitKey(25) & 0xFF == ord('q'):
+    #         break
+    #     frames_tracked.append(frame)
 
     print(f'\nDone')
 
