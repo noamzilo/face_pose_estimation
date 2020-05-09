@@ -51,7 +51,7 @@ def example_facenet():
 
     # save tracked video
     out_path = r'C:\noam\face_pose_estimation\output\video_tracked.mp4'
-    video_writer_fourrcc = cv2.VideoWriter_fourcc(*'FMP4')
+    video_writer_fourrcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_tracked = cv2.VideoWriter(out_path, video_writer_fourrcc, video_reader.frame_rate , video_reader.shape[:2])
     for frame in frames_tracked:
         video_tracked.write(frame)
