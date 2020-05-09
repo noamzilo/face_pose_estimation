@@ -35,10 +35,12 @@ def example_pipeline():
 
         if bboxes is not None:
             filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
-            bboxes_per_frame.append(filtered_bboxes)
-        else:  # most naiive, just copy from last frame
-            if len(bboxes_per_frame) == 0:
+            if len(filtered_bboxes) > 0:
+                bboxes_per_frame.append(filtered_bboxes)
+            else:
                 bboxes_per_frame.append(bboxes_per_frame[-1])
+        else:  # most naiive, just copy from last frame
+            bboxes_per_frame.append(bboxes_per_frame[-1])
 
     # post process by found bboxes
     frames = video_reader.frames(start=start_frame, end=end_frame)  # have to create a new generator for second pass
