@@ -38,24 +38,24 @@ def example_facenet():
             if confidence_threshold < confidence:
                 draw.rectangle(box.tolist(), outline=(255, 0, 0), width=6)
 
-        # Add to frame list
-        frames_tracked.append(frame_draw.resize((640, 360), Image.BILINEAR))
-
         # display detections
         cv2_frame = cv2.cvtColor(np.array(frame_draw), cv2.COLOR_RGB2BGR)
         cv2.imshow(f'Frame', cv2_frame)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
+        # Add to frame list
+        frames_tracked.append(cv2_frame)
+
     print(f'\nDone')
 
 
     # save tracked video
-    # dim = frames_tracked[0].size
-    # fourcc = cv2.VideoWriter_fourcc(*'FMP4')
-    # video_tracked = cv2.VideoWriter('video_tracked.mp4', fourcc, 25.0, dim)
-    # for frame in frames_tracked:
-    #     video_tracked.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
-    # video_tracked.release()
+    out_path = r'C:\noam\face_pose_estimation\output\video_tracked.mp4'
+    video_writer_fourrcc = cv2.VideoWriter_fourcc(*'FMP4')
+    video_tracked = cv2.VideoWriter(out_path, video_writer_fourrcc, video_reader.frame_rate, video_reader.shape)
+    for frame in frames_tracked:
+        video_tracked.write(frame)
+    video_tracked.release()
 
 example_facenet()

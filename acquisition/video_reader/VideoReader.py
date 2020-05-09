@@ -13,22 +13,26 @@ class VideoReader(object):
 
     def _create_capture_object(self):
         self._cap = cv2.VideoCapture(self._path_to_video)
+        self._width = self._cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self._height = self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        self._frame_rate = self._cap.get(cv2.CAP_PROP_FPS)
+        self._frame_count = self._cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        self._n_channels = 3  # https://stackoverflow.com/questions/61699391/how-to-know-how-many-color-channels-in-cv2-videocapture-object
 
     def _set_resize_to_shape(self, resize_to_shape, downsample_factor):
         assert resize_to_shape is None or downsample_factor == 1.0
         if resize_to_shape is not None:
-            self._output_shape = resize_to_shape
+            self._output_frame_shape = (resize_to_shape[0], resize_to_shape[1], self._n_channels)
         else:
-            original_width = self._cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-            original_height = self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-            self._output_shape = tuple(np.array([original_width, original_height] * downsample_factor))
+            frame_shape = tuple(np.array([self._width, self._height]) * downsample_factor)
+            self._output_frame_shape = (frame_shape[0], frame_shape[1], self._n_channels)
 
     def _set_mode(self, mode):
         self._modes = {'opencv', 'PIL'}
         assert mode in self._modes
         self._mode = mode
 
-    def frames(self, start=0, end=np.inf, skip=1):
+    def frames(self, start=0, end=np.inf, skip=1):  # generator object for frames
         current_frame_ind = -1
         cap = self._cap
         while cap.isOpened():
@@ -46,9 +50,9 @@ class VideoReader(object):
                 continue
 
     def _resize_to_shape(self, frame):
-        if self._output_shape is None:
+        if self._output_frame_shape is None:
             return frame
-        frame = cv2.resize(frame, self._output_shape)
+        frame = cv2.resize(frame, self._output_frame_shape)
         return frame
 
     def _apply_filters(self, frame):
@@ -62,3 +66,18 @@ class VideoReader(object):
         elif self._mode == 'PIL':
             return Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
+    @property
+    def original_shape(self):
+        return self._height, self._width
+
+    @property
+    def shape(self):
+        return self._output_frame_shape
+
+    @property
+    def frame_rate(self):
+        return self._frame_rate
+
+    @property
+    def frame_count(self):
+        return self._frame_count
