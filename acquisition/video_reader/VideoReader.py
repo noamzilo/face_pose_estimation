@@ -35,6 +35,9 @@ class VideoReader(object):
     def frames(self, start=0, end=np.inf, skip=1):  # generator object for frames
         current_frame_ind = -1
         cap = self._cap
+        if not cap.isOpened():
+            self._create_capture_object()
+
         while cap.isOpened():
             current_frame_ind += 1
             ret, frame = cap.read()
@@ -48,6 +51,8 @@ class VideoReader(object):
                 yield self._apply_filters(frame)
             else:
                 continue
+
+        cap.release()
 
     def _resize_to_shape(self, frame):
         if self._output_frame_shape is None:

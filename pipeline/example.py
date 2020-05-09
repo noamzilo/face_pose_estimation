@@ -13,28 +13,41 @@ from src.post_processing.PostProcessor import PostProcessor
 def example_pipeline():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(f'Running on device: {device}')
+    start_frame, end_frame = 60, 120
+
 
     mtcnn = MTCNN(keep_all=True, device=device)
 
     path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL', downsample_factor=0.25)
-    frames = video_reader.frames(start=60, end=120,)
+    frames = video_reader.frames(start=start_frame, end=end_frame,)
 
     frames_tracked = []
+    bboxes_per_frame = []
+    # modify bboxes by temporal data
+    confidence_threshold = 0.95
     for i, frame in enumerate(frames):
         print(f'\rTracking frame: {i + 1}', end='')
 
         bboxes, confidences = mtcnn.detect(frame)
 
-        confidence_threshold = 0.95
+        if bboxes is not None:
+            filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
+            bboxes_per_frame.append(filtered_bboxes)
+        else:  # most naiive, just copy from last frame
+            if len(bboxes_per_frame) != 0:
+                bboxes_per_frame.append(bboxes_per_frame[-1])
+
+    # post process by found bboxes
+    frames = video_reader.frames(start=start_frame, end=end_frame)  # have to create a new generator for second pass
+    for i, (frame, bboxes) in enumerate(zip(frames, bboxes_per_frame)):
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        frame = post_process_frame(bboxes, confidence_threshold, confidences, frame)
+        frame = post_process_frame(frame, bboxes)
 
         cv2.imshow(f'Frame', frame)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
-
         frames_tracked.append(frame)
 
     print(f'\nDone')
@@ -48,11 +61,10 @@ def example_pipeline():
     video_tracked.release()
 
 
-def post_process_frame(bboxes, confidence_threshold, confidences, frame):
+def post_process_frame(frame, bboxes):
     if bboxes is not None:
-        filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
-        frame = PostProcessor.draw_rectengles(frame, filtered_bboxes)
-        frame = PostProcessor.blur_at_bboxes(frame, filtered_bboxes)
+        frame = PostProcessor.draw_rectengles(frame, bboxes)
+        frame = PostProcessor.blur_at_bboxes(frame, bboxes)
     return frame
 
 
