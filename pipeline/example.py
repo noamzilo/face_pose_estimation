@@ -27,18 +27,22 @@ def example_pipeline():
         print(f'\rTracking frame: {i + 1}', end='')
 
         # Detect faces
-        boxes, confidences = mtcnn.detect(frame)
+        bboxes, confidences = mtcnn.detect(frame)
+        confidence_threshold = 0.95
+        filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
 
-        frame = PostProcessor.draw_rectengles(frame, boxes, confidences)
+        frame = PostProcessor.draw_rectengles(frame, filtered_bboxes)
+        frame_cv2 = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
+        frame = PostProcessor.blur_at_bboxes(frame_cv2, filtered_bboxes)
 
         # display detections
-        cv2_frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        cv2.imshow(f'Frame', cv2_frame)
+        # cv2_frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
+        cv2.imshow(f'Frame', frame)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
         # Add to frame list
-        frames_tracked.append(cv2_frame)
+        frames_tracked.append(frame)
 
     print(f'\nDone')
 
