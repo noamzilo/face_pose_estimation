@@ -3,7 +3,6 @@ import torch
 import numpy as np
 import mmcv, cv2
 from PIL import Image, ImageDraw
-from IPython import display
 
 from src.acquisition.video_reader.VideoReader import VideoReader
 
@@ -15,13 +14,11 @@ def example_facenet():
     mtcnn = MTCNN(keep_all=True, device=device)
 
     path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
-    video = mmcv.VideoReader(path_to_video)
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL')
     frames = video_reader.frames(start=0, end=25)
     # frames = [Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)) for frame in video]
 
-    display.Video(path_to_video, width=640)
 
     # run video through MTCNN
     frames_tracked = []
