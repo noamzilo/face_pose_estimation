@@ -38,6 +38,7 @@ def test_video_reader_opencv(video_reader_opencv):
 
     cv2.destroyAllWindows()
 
+
 def test_video_reader_pil(video_reader_pil):
     for frame in video_reader_pil.frames(start=10, end=100, skip=5):
         cv2_frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
