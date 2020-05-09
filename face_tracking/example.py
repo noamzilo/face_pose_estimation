@@ -5,7 +5,7 @@ import mmcv, cv2
 from PIL import Image, ImageDraw
 from IPython import display
 
-# from code.acquisition.video_reader.VideoReader import VideoReader
+from src.acquisition.video_reader.VideoReader import VideoReader
 
 def example_facenet():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -13,11 +13,14 @@ def example_facenet():
 
     mtcnn = MTCNN(keep_all=True, device=device)
 
-    video_path = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
-    video = mmcv.VideoReader(video_path)
-    frames = [Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)) for frame in video]
+    path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
+    video = mmcv.VideoReader(path_to_video)
 
-    display.Video(video_path, width=640)
+    video_reader = VideoReader(path_to_video=path_to_video)
+    frames = video_reader.frames()
+    # frames = [Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)) for frame in video]
+
+    display.Video(path_to_video, width=640)
 
     # run video through MTCNN
     frames_tracked = []
