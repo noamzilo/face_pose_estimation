@@ -34,9 +34,9 @@ class VideoReader(object):
 
     def frames(self, start=0, end=np.inf, skip=1):  # generator object for frames
         current_frame_ind = -1
-        cap = self._cap
-        if not cap.isOpened():
+        if not self._cap.isOpened():
             self._create_capture_object()
+        cap = self._cap
 
         while cap.isOpened():
             current_frame_ind += 1

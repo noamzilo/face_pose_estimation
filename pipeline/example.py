@@ -14,6 +14,7 @@ def example_pipeline():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(f'Running on device: {device}')
     start_frame, end_frame = 60, 120
+    # start_frame, end_frame = 5, 10
 
 
     mtcnn = MTCNN(keep_all=True, device=device)
@@ -36,7 +37,7 @@ def example_pipeline():
             filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if confidence_threshold < confidence]
             bboxes_per_frame.append(filtered_bboxes)
         else:  # most naiive, just copy from last frame
-            if len(bboxes_per_frame) != 0:
+            if len(bboxes_per_frame) == 0:
                 bboxes_per_frame.append(bboxes_per_frame[-1])
 
     # post process by found bboxes
