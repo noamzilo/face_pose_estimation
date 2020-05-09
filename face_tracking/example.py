@@ -18,7 +18,7 @@ def example_facenet():
     video = mmcv.VideoReader(path_to_video)
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL')
-    frames = video_reader.frames(start=20, end=25)
+    frames = video_reader.frames(start=0, end=25)
     # frames = [Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)) for frame in video]
 
     display.Video(path_to_video, width=640)

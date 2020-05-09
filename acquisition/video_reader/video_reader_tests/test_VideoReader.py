@@ -48,5 +48,6 @@ def test_video_reader_pil(video_reader_pil):
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
+
     cv2.destroyAllWindows()
 

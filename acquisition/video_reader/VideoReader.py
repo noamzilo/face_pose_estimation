@@ -4,14 +4,24 @@ from PIL import Image
 
 
 class VideoReader(object):
-    def __init__(self, path_to_video, mode='opencv'):
+    def __init__(self, path_to_video, mode='opencv', resize_to_shape=None, downsample_factor=1.0):
         self._path_to_video = path_to_video
         self._set_mode(mode)
 
         self._create_capture_object()
+        self._set_resize_to_shape(resize_to_shape, downsample_factor)
 
     def _create_capture_object(self):
         self._cap = cv2.VideoCapture(self._path_to_video)
+
+    def _set_resize_to_shape(self, resize_to_shape, downsample_factor):
+        assert resize_to_shape is None or downsample_factor == 1.0
+        if resize_to_shape is not None:
+            self._output_shape = resize_to_shape
+        else:
+            original_width = self._cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            original_height = self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            self._output_shape = tuple(np.array([original_width, original_height] * downsample_factor))
 
     def _set_mode(self, mode):
         self._modes = {'opencv', 'PIL'}
@@ -31,9 +41,20 @@ class VideoReader(object):
             elif end is None or end <= current_frame_ind:
                 break
             if current_frame_ind % skip == 0:
-                yield self._convert_np_frame_by_mode(frame)
+                yield self._apply_filters(frame)
             else:
                 continue
+
+    def _resize_to_shape(self, frame):
+        if self._output_shape is None:
+            return frame
+        frame = cv2.resize(frame, self._output_shape)
+        return frame
+
+    def _apply_filters(self, frame):
+        frame = self._resize_to_shape(frame)
+        frame = self._convert_np_frame_by_mode(frame)
+        return frame
 
     def _convert_np_frame_by_mode(self, frame):
         if self._mode == 'opencv':
