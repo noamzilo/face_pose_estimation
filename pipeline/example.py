@@ -13,9 +13,9 @@ from src.post_processing.PostProcessor import PostProcessor
 def example_pipeline():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(f'Running on device: {device}')
-    start_frame, end_frame = 60, 120
+    # start_frame, end_frame = 60, 120
     # start_frame, end_frame = 5, 10
-    # start_frame, end_frame = 0, 200
+    start_frame, end_frame = 0, 200
 
 
     mtcnn = MTCNN(keep_all=True, device=device)
@@ -45,7 +45,7 @@ def example_pipeline():
         last_frame_filtered_bboxes, last_frame_confidences = filtered_bboxes, confidences
 
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        frame = post_process_frame(frame, bboxes)
+        frame = post_process_frame(frame, filtered_bboxes)
 
         cv2.imshow(f'Frame', frame)
         if cv2.waitKey(25) & 0xFF == ord('q'):
