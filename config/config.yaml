@@ -1,0 +1,4 @@
+downsample_factor: 0.25
+
+data:
+  path_to_video: C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4

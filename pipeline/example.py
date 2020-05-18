@@ -11,7 +11,7 @@ from src.post_processing.PostProcessor import PostProcessor
 # TODO face recognition: https://github.com/ageitgey/face_recognition
 
 
-def example_pipeline():
+def example_pipeline(path_to_video):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(f'Running on device: {device}')
     # start_frame, end_frame = 60, 120
@@ -20,7 +20,7 @@ def example_pipeline():
 
     mtcnn = MTCNN(keep_all=True, device=device)
 
-    path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"
+    # path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"s
 
     video_reader = VideoReader(path_to_video=path_to_video, mode='PIL', downsample_factor=0.25)
     frames = video_reader.frames(start=start_frame, end=end_frame,)
@@ -80,6 +80,3 @@ def post_process_frame(frame, bboxes):
         frame = PostProcessor.blur_at_bboxes(frame, bboxes)
     return frame
 
-
-if __name__ == "__main__":
-    example_pipeline()
