@@ -8,6 +8,7 @@ import cv2
 from src.acquisition.video_reader.VideoReader import VideoReader
 from src.post_processing.PostProcessor import PostProcessor
 
+# TODO face recognition: https://github.com/ageitgey/face_recognition
 
 
 def example_pipeline():
@@ -16,7 +17,6 @@ def example_pipeline():
     # start_frame, end_frame = 60, 120
     # start_frame, end_frame = 5, 10
     start_frame, end_frame = 0, 200
-
 
     mtcnn = MTCNN(keep_all=True, device=device)
 
