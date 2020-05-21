@@ -12,9 +12,9 @@ class Pipeline(object):
         self._config = ConfigProvider.config()
 
     def process_single_frame(self, frame):
-        self._example_pipeline(frame)
+        raise NotImplementedError
 
-    def _example_pipeline(self, path_to_video):
+    def _example_pipeline(self):
         device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         print(f'Running on device: {device}')
         # start_frame, end_frame = 60, 120
@@ -25,7 +25,7 @@ class Pipeline(object):
 
         # path_to_video = r"C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4"s
 
-        video_reader = VideoReader(path_to_video=path_to_video, mode='PIL', downsample_factor=0.25)
+        video_reader = VideoReader(path_to_video=self._config.data.path_to_video, mode='PIL', downsample_factor=0.25)
         frames = video_reader.frames(start=start_frame, end=end_frame, )
 
         frames_tracked = []
