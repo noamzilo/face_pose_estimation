@@ -46,7 +46,10 @@ class Pipeline(object):
             filtered_bboxes = self._last_frame_filtered_bboxes
         self._last_frame_filtered_bboxes, self._last_frame_confidences = filtered_bboxes, confidences
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        frame = self._post_process_frame(frame, filtered_bboxes)
+
+        if bboxes is not None:
+            frame = PostProcessor.draw_rectengles(frame, bboxes)
+            frame = PostProcessor.blur_at_bboxes(frame, bboxes)
         return frame
 
     def example_pipeline(self):
@@ -71,9 +74,3 @@ class Pipeline(object):
             self._video_writer.write(frame)
         self._video_writer.release()
 
-    @staticmethod
-    def _post_process_frame(frame, bboxes):
-        if bboxes is not None:
-            frame = PostProcessor.draw_rectengles(frame, bboxes)
-            frame = PostProcessor.blur_at_bboxes(frame, bboxes)
-        return frame
