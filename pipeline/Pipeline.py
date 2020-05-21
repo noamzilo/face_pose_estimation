@@ -5,17 +5,17 @@ from src.acquisition.video_reader.VideoReader import VideoReader
 from src.post_processing.PostProcessor import PostProcessor
 import numpy as np
 import cv2
+from src.statefull_processing.StatefulFrameProcessor import StatefulFrameProcessor
 
 
 class Pipeline(object):
     def __init__(self):
         self._config = ConfigProvider.config()
-        self._device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self._mtcnn = MTCNN(keep_all=True, device=self._device)
         self._video_reader = VideoReader(
             path_to_video=self._config.data.path_to_video,
             mode='PIL',
             downsample_factor=0.25)
+        self._frame_processor = StatefulFrameProcessor()
 
         self._video_writer = self._create_video_writer()
 
@@ -34,36 +34,16 @@ class Pipeline(object):
             self._video_reader.shape[:2])
         return video_tracked
 
-    def process_single_frame(self, frame):
-        bboxes, confidences = self._mtcnn.detect(frame)
-
-        if bboxes is not None:
-            filtered_bboxes = [bbox for bbox, confidence in zip(bboxes, confidences) if
-                               self._config.confidence_threshold < confidence]
-            if len(filtered_bboxes) == 0:
-                filtered_bboxes = self._last_frame_filtered_bboxes
-        else:  # most naiive, just copy from last frame
-            filtered_bboxes = self._last_frame_filtered_bboxes
-        self._last_frame_filtered_bboxes, self._last_frame_confidences = filtered_bboxes, confidences
-        frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-
-        if bboxes is not None:
-            frame = PostProcessor.draw_rectengles(frame, bboxes)
-            frame = PostProcessor.blur_at_bboxes(frame, bboxes)
-        return frame
-
     def example_pipeline(self):
-        print(f'Running on device: {self._device}')
-
         frames = self._video_reader.frames(start=self._start_frame, end=self._end_frame, )
 
         frames_tracked = []
         for i, frame in enumerate(frames):
             self._current_frame_id += 1
             print(f'\rTracking frame: {self._current_frame_id}', end='')
-            processed_frame = self.process_single_frame(frame)
+            processed_frame = self._frame_processor.process_single_frame(frame)
 
-            cv2.imshow(f'Frame', frame)
+            cv2.imshow(f'Frame', processed_frame)
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
 
