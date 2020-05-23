@@ -10,7 +10,7 @@ class Pipeline(object):
         self._video_reader = VideoReader(
             path_to_video=self._config.data.path_to_video,
             mode='PIL',
-            downsample_factor=self._config.data.downsample_factor)
+            downsample_factor=self._config.downsample_factor)
         self._frame_processor = StatefulFrameProcessor()
 
         self._video_writer = self._create_video_writer()
