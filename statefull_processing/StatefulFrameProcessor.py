@@ -17,9 +17,16 @@ class StatefulFrameProcessor(object):
 
         # self._last_frame_filtered_bboxes, self._last_frame_confidences = None, None
 
-    def process_single_frame(self, frame):
+    def process_single_frame(self, frame, frame_index):
         detected_bboxes, confidences = self._mtcnn.detect(frame)
-        tracked_bboxes = self._bbox_tracker.update_tracked_bboxes(detected_bboxes, confidences)
+        detected_bboxes = [] if detected_bboxes is None else detected_bboxes
+        confidences = [] if confidences is None else confidences
+
+        confident_bboxes = [bbox for bbox, confidence in zip(detected_bboxes, confidences) if
+                            self._config.confidence_threshold < confidence]
+        tracked_bboxes = self._bbox_tracker.update_tracked_bboxes(
+            frame_index=frame_index,
+            new_bboxes=confident_bboxes)
 
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
         if tracked_bboxes is not None:

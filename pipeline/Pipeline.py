@@ -37,7 +37,9 @@ class Pipeline(object):
         for i, frame in enumerate(frames):
             self._current_frame_id += 1
             print(f'\rTracking frame: {self._current_frame_id}', end='')
-            processed_frame = self._frame_processor.process_single_frame(frame)
+            processed_frame = self._frame_processor.process_single_frame(
+                frame=frame,
+                frame_index=i)
 
             cv2.imshow(f'Frame', processed_frame)
             if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -49,4 +51,3 @@ class Pipeline(object):
         for frame in frames_tracked:
             self._video_writer.write(frame)
         self._video_writer.release()
-
