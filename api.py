@@ -1,5 +1,3 @@
-from src.pipeline.example import example_pipeline
-from src.Utils.ConfigParser import ConfigParser
 from src.pipeline.Pipeline import Pipeline
 
 

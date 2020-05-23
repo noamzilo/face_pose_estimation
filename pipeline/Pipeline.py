@@ -1,9 +1,5 @@
 from src.Utils.ConfigProvider import ConfigProvider
-import torch
-from facenet_pytorch import MTCNN
 from src.acquisition.video_reader.VideoReader import VideoReader
-from src.post_processing.PostProcessor import PostProcessor
-import numpy as np
 import cv2
 from src.statefull_processing.StatefulFrameProcessor import StatefulFrameProcessor
 
