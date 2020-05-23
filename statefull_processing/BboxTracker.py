@@ -1,4 +1,5 @@
 from src.Utils.ConfigProvider import ConfigProvider
+from src.Utils.bbox.BboxUtils import BboxUtils
 
 
 class BboxTracker(object):
@@ -19,3 +20,6 @@ class BboxTracker(object):
         self._last_frame_bboxes = tracked_bboxes
 
         return tracked_bboxes
+
+    def _track_with_same_place_iou(self):
+        pass
