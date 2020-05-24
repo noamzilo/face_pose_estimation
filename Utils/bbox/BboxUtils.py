@@ -45,10 +45,13 @@ class BboxUtils(object):
     def ious(bboxes1, bboxes2):
         # lefts2, tops2, rights2, bottoms2 = BboxUtils.bbox_to_perimiters(bboxes2)
 
-        matches = {}
-        for i, bbox in enumerate(bboxes1):
-            matches_i = BboxUtils.ious_same_ids(bbox, bboxes2)
-            matches[i] = matches_i
+        ious = np.zeros((bboxes1.shape[0], bboxes2.shape[0]))
+        for i, bbox1 in enumerate(bboxes1):
+            for j, bbox2 in enumerate(bboxes2):
+                iou = BboxUtils.ious_same_ids(bbox1, bbox2)
+                ious[i, j] = iou
+
+        return ious
 
     @staticmethod
     def bbox_to_perimiters(bboxes):

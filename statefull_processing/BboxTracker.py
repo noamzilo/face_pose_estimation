@@ -27,5 +27,6 @@ class BboxTracker(object):
         return tracked_bboxes
 
     def _track_with_same_place_iou(self, frame_index, new_bboxes):
-        ious = BboxUtils.ious_same_ids(self._last_frame_bboxes, new_bboxes)
+        # ious = BboxUtils.ious_same_ids(self._last_frame_bboxes, new_bboxes)
+        ious = BboxUtils.ious(self._last_frame_bboxes, new_bboxes)
         pass
