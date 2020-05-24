@@ -23,7 +23,7 @@ class StatefulFrameProcessor(object):
         confidences = [] if confidences is None else confidences
 
         confident_bboxes = np.array([bbox for bbox, confidence in zip(detected_bboxes, confidences) if
-                                     self._config.confidence_threshold < confidence])
+                                     self._config.detection.confidence_threshold < confidence])
         tracked_bboxes = self._bbox_tracker.update_tracked_bboxes(
             frame_index=frame_index,
             new_bboxes=confident_bboxes)

@@ -1,11 +1,17 @@
-downsample_factor: 0.25
-confidence_threshold: 0.95
-
 data:
   #path_to_video: C:\noam\face_pose_estimation\data\videos\one_woman_occlusion.mp4
   path_to_video: C:\noam\face_pose_estimation\data\videos\crowd_with_occlusion.mp4
   start_frame: 20
   end_frame: 300
+
+acquisition:
+  downsample_factor: 0.25
+  
+detection:
+  confidence_threshold: 0.95
+
+tracking:
+  iou_threshold: 0.75
 
 output:
   path_to_output_file: C:\noam\face_pose_estimation\output\output.mp4
