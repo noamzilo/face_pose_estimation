@@ -20,8 +20,8 @@ class BboxTracker(object):
         calculate remaining, new, and lost boxes based on new_bboxes and the state in self._detections
         :param new_bboxes: np.array of shape (#detections, 4), columns are (left, top, right, bottom) correspondingly
         :return:
-        remaining_det_inds: np.array of inds in new_bboxes of detections that were found in the new frame AND in the
-                            previous frame
+        remaining_det_old_inds: np.array of inds in self._detections of detections that were found in the new frame AND in the
+                                previous frame
         new_det_inds: np.array of inds in new_bboxes of detections that were found in the new frame but not in the
                       previous one
         lost_det_inds: np.array of inds in self._detections of detections that were found in previous frame but not in
@@ -37,16 +37,18 @@ class BboxTracker(object):
         same_object_inds_last_frame, same_object_inds_new_frame = same_object_inds
 
         # new locations of boxes that intersect old boxes
-        remaining_det_inds = same_object_inds_new_frame
+        remaining_det_old_inds = same_object_inds_last_frame
+        remaining_det_new_inds = same_object_inds_new_frame
 
         # new locations of boxes that don't intersect old boxes
         new_det_inds = np.delete(np.arange(new_bboxes.shape[0]), same_object_inds_new_frame)
-        assert len(remaining_det_inds) + len(new_det_inds) == new_bboxes.shape[0]
+        assert len(remaining_det_new_inds) + len(new_det_inds) == new_bboxes.shape[0]
 
         # old locations of boxes that don't intersect new boxes
         lost_det_inds = np.delete(np.arange(new_bboxes.shape[0]), same_object_inds_last_frame)
 
-        return remaining_det_inds, new_det_inds, lost_det_inds
+        return remaining_det_old_inds, remaining_det_new_inds, new_det_inds, lost_det_inds
 
     def _update_tracking(self, remaining_det_inds, new_det_inds, lost_det_inds):
-        pass
+        old_detections = self._detections.values()  # counting on the dict maintaining order
+        new_detections =
