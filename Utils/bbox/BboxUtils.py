@@ -1,5 +1,4 @@
 import numpy as np
-from itertools import product
 
 
 class BboxUtils(object):
@@ -27,12 +26,15 @@ class BboxUtils(object):
         """
         calculate IOUS https://www.pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/
         between all bboxes1 and bboxes2
-        :param bboxes1: list of bboxes, each of the form left, top, right, bottom
-        :param bboxes2: list of bboxes, each of the form left, top, right, bottom
+        :param bboxes1: NON EMPTY list of bboxes, each of the form left, top, right, bottom
+        :param bboxes2: NON EMPTY list of bboxes, each of the form left, top, right, bottom
         :return: np.array of shape (bboxes1.shape[0], bboxes2.shape[0]).
                  index i, j contains the IOU between bboxes1[i] and bboxes2[j] if any overlap, else 0.
         """
         # probably can be vectorized, but no real need for <7 matches per frame.
+        assert len(bboxes1) > 0
+        assert len(bboxes2) > 0
+
         ious = np.zeros((bboxes1.shape[0], bboxes2.shape[0]))
         for i, bbox1 in enumerate(bboxes1):
             for j, bbox2 in enumerate(bboxes2):

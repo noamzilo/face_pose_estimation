@@ -29,7 +29,7 @@ class StatefulFrameProcessor(object):
             new_bboxes=confident_bboxes)
 
         frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-        if tracked_bboxes is not None:
+        if 0 < len(tracked_bboxes.shape):
             frame = PostProcessor.draw_rectengles(frame, tracked_bboxes)
             frame = PostProcessor.blur_at_bboxes(frame, tracked_bboxes)
         return frame

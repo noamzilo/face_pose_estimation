@@ -7,16 +7,13 @@ class BboxTracker(object):
     def __init__(self, ):
         self._config = ConfigProvider.config()
 
-        self._detections = []
+        self._detections = {}
+        self.__running_id = 0
 
     def update_tracked_bboxes(self, frame_index, new_bboxes):
-        if len(self._detections) == 0:
-            self._detections = new_bboxes
-            return self._detections
-
-        iou_tracking = self._track_with_same_place_iou(new_bboxes)
-        self._update_tracking(same_detections_new_)
-        return iou_tracking
+        remaining_det_inds, new_det_inds, lost_det_inds = self._track_with_same_place_iou(new_bboxes)
+        self._update_tracking(remaining_det_inds, new_det_inds, lost_det_inds)
+        return np.array(self._detections.values())
 
     def _track_with_same_place_iou(self, new_bboxes):
         """
@@ -30,24 +27,26 @@ class BboxTracker(object):
         lost_det_inds: np.array of inds in self._detections of detections that were found in previous frame but not in
                        the new frame
         """
-        # ious = BboxUtils.ious_same_ids(self._last_frame_bboxes, new_bboxes)
-        old_dets = np.array(self._detections)
+        old_dets = np.array(self._detections.values())
+        if len(new_bboxes.shape) == 0:
+            return np.array(self._detections.values()), np.array([]), np.array(self._detections.values())
+        if len(old_dets.shape) == 0:
+            return np.array([]), np.arange(new_bboxes.shape[0]), np.array([])
         ious = BboxUtils.ious(old_dets, new_bboxes)
         same_object_inds = np.where(self._config.tracking.iou_threshold < ious)
         same_object_inds_last_frame, same_object_inds_new_frame = same_object_inds
 
         # new locations of boxes that intersect old boxes
         remaining_det_inds = same_object_inds_new_frame
-        # remaining_detections_new_location = new_bboxes[same_object_inds_new_frame, :]
 
         # new locations of boxes that don't intersect old boxes
         new_det_inds = np.delete(np.arange(new_bboxes.shape[0]), same_object_inds_new_frame)
-        # new_detections = new_bboxes[np.delete(np.arange(new_bboxes.shape[0]), same_object_inds_new_frame), :]
-        # assert remaining_detections_new_location.shape[0] + new_detections.shape[0] == new_bboxes.shape[0]
         assert len(remaining_det_inds) + len(new_det_inds) == new_bboxes.shape[0]
 
         # old locations of boxes that don't intersect new boxes
         lost_det_inds = np.delete(np.arange(new_bboxes.shape[0]), same_object_inds_last_frame)
-        # lost_detections = old_dets[np.delete(np.arange(new_bboxes.shape[0]), same_object_inds_last_frame), :]
 
         return remaining_det_inds, new_det_inds, lost_det_inds
+
+    def _update_tracking(self, remaining_det_inds, new_det_inds, lost_det_inds):
+        pass
