@@ -51,4 +51,5 @@ class BboxTracker(object):
 
     def _update_tracking(self, remaining_det_inds, new_det_inds, lost_det_inds):
         old_detections = self._detections.values()  # counting on the dict maintaining order
+        add a translation: id to index. or index to id.
         new_detections =
