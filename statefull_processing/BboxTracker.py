@@ -57,6 +57,7 @@ class BboxTracker(object):
         remaining_dets = new_bboxes[remaining_det_new_inds]
         remaining_ids = old_all_ids[remaining_det_old_inds]
 
+        # TODO only lose those after some time of not detecting.
         lost_det_ids = old_all_ids[lost_det_inds]
 
         max_remaining_id = np.max(remaining_ids)
@@ -68,4 +69,4 @@ class BboxTracker(object):
         new_all_ids = np.vstack(remaining_ids, new_det_ids)
 
         self._detections = new_all_dets
-        self._ids = new_all_ids      
+        self._ids = new_all_ids
